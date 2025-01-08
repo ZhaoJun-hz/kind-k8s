@@ -43,4 +43,6 @@ RUN apt-get -y update >/dev/null && apt-get -y install \
     scapy \
     bird \
     openrc \
+    dnsutils \
+    telnet \
     lrzsz >/dev/null 2>&1
