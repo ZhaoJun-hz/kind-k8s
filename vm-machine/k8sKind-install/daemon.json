@@ -1,0 +1,14 @@
+{
+  "registry-mirrors": [
+    "https://hub.xdark.top",
+    "https://docker.registry.cyou",
+    "https://docker-cf.registry.cyou",
+    "https://dockerhub.icu",
+    "https://docker.unsee.tech",
+    "https://hub.geekery.cn"
+  ],
+  "exec-opts":["native.cgroupdriver=systemd"],
+  "insecure-registries": [
+    "my.harbor.cn"
+  ]
+}

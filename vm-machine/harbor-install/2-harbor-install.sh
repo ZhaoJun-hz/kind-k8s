@@ -7,9 +7,9 @@ mv /root/crictl /usr/local/bin/
 mkdir /root/harbor/data/ssl -p
 cd /root/harbor/data/ssl
 openssl genrsa -out ca.key 3072
-openssl req  -subj "/C=CN/ST=HeNan/L=ZhengZhou/O=ShuDong/OU=Develop/CN=harbor.com" -new -x509 -days 3650 -key ca.key -out ca.pem
+openssl req  -subj "/C=CN/ST=HeNan/L=ZhengZhou/O=ShuDong/OU=Develop/CN=my.harbor.cn" -new -x509 -days 3650 -key ca.key -out ca.pem
 openssl genrsa -out harbor.key 3072
-openssl req -subj "/C=CN/ST=HeNan/L=ZhengZhou/O=ShuDong/OU=Develop/CN=harbor.com" -new -key harbor.key -out harbor.csr
+openssl req -subj "/C=CN/ST=HeNan/L=ZhengZhou/O=ShuDong/OU=Develop/CN=my.harbor.cn" -new -key harbor.key -out harbor.csr
 openssl x509 -req -in harbor.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out harbor.pem -days 3650
 
 mkdir /root/harbor/install -p
@@ -21,7 +21,7 @@ cp harbor.yml.tmpl harbor.yml
 # 定义文件路径
 FILE="harbor.yml"
 # 使用 sed 命令进行替换
-sed -i 's/hostname: reg.mydomain.com/hostname: harbor.com/' "$FILE"
+sed -i 's/hostname: reg.mydomain.com/hostname: my.harbor.cn/' "$FILE"
 sed -i 's|certificate: /your/certificate/path|certificate: /root/harbor/data/ssl/harbor.pem|' "$FILE"
 sed -i 's|private_key: /your/private/key/path|private_key: /root/harbor/data/ssl/harbor.key|' "$FILE"
 echo "替换完成！"
