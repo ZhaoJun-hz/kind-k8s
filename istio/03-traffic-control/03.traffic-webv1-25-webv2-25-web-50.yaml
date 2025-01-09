@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-web-webv1-25-webv2-25-web-50
+  namespace: traffic-control
+spec:
+  hosts:
+    - nginx-web-all
+  http:
+    - route:
+        - destination:
+            host: nginx-webv1
+            port:
+              number: 8080
+          weight: 25
+        - destination:
+            host: nginx-webv2
+            port:
+              number: 8080
+          weight: 25
+        - destination:
+            host: nginx-web
+            port:
+              number: 8080
+          weight: 50

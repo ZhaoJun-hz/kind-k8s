@@ -1,0 +1,32 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: nginx-web-gateway-virtualservice
+  namespace: traffic-control
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "nginx.web.com"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-web-gateway-virtualservice
+  namespace: traffic-control
+spec:
+  hosts:
+    - "nginx.web.com"
+  gateways:
+    - nginx-web-gateway-virtualservice
+  http:
+    - route:
+        - destination:
+            host: nginx-web-all
+            port:
+              number: 8080

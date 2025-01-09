@@ -1,0 +1,159 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: traffic-control
+  name: nginx-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+      server: nginx-web
+  template:
+    metadata:
+      labels:
+        app: web
+        server: nginx-web
+    spec:
+      containers:
+        - name: nginx-web
+          image: my.harbor.cn/k8sstudy/nginx:web
+          ports:
+            - containerPort: 80
+              protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: traffic-control
+  name: nginx-webv1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+      server: nginx-webv1
+  template:
+    metadata:
+      labels:
+        app: web
+        server: nginx-webv1
+    spec:
+      containers:
+        - name: nginx-webv1
+          image: my.harbor.cn/k8sstudy/nginx:webv1
+          ports:
+            - containerPort: 80
+              protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: traffic-control
+  name: nginx-webv2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+      server: nginx-webv2
+  template:
+    metadata:
+      labels:
+        app: web
+        server: nginx-webv2
+    spec:
+      containers:
+        - name: nginx-webv2
+          image: my.harbor.cn/k8sstudy/nginx:webv2
+          ports:
+            - containerPort: 80
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: traffic-control
+  name: nginx-webv1
+spec:
+  selector:
+    server: nginx-webv1
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: traffic-control
+  name: nginx-webv2
+spec:
+  selector:
+    server: nginx-webv2
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: traffic-control
+  name: nginx-web
+spec:
+  selector:
+    server: nginx-web
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: traffic-control
+  name: nginx-web-all
+spec:
+  selector:
+    app: web
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: traffic-control
+  labels:
+    app: nettool
+  name: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nettool
+  template:
+    metadata:
+      labels:
+        app: nettool
+    spec:
+      volumes:
+        - name: host
+          hostPath:
+            path: /
+            type: Directory
+      containers:
+        - image: my.harbor.cn/k8sstudy/nettool:latest
+          name: nettoolbox
+          volumeMounts:
+            - name: host
+              mountPath: /host
+          env:
+            - name: NETTOOL_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          securityContext:
+            privileged: true

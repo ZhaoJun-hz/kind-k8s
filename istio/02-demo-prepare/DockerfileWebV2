@@ -1,0 +1,4 @@
+FROM nginx:stable-alpine3.20
+RUN echo "<h1>nginx web v2 version</h1>" > /usr/share/nginx/html/index.html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

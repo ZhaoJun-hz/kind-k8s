@@ -1,0 +1,28 @@
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: nginx-web-rule-subset-policy
+  namespace: traffic-control
+spec:
+  host: nginx-web-all
+  subsets:
+    - labels:
+        app: web
+      name: web
+      trafficPolicy:
+        loadBalancer:
+          simple: ROUND_ROBIN
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-web-rule-subset-policy
+  namespace: traffic-control
+spec:
+  hosts:
+    - nginx-web-all
+  http:
+    - route:
+        - destination:
+            host: nginx-web-all
+            subset: web

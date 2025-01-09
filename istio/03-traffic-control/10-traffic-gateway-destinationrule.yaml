@@ -1,0 +1,65 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: nginx-web-gateway-destinationrule
+  namespace: traffic-control
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "nginx.web.com"
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: nginx-web-gateway-destinationrule
+  namespace: traffic-control
+spec:
+  host: nginx-web-all
+  subsets:
+    - labels:
+        server: nginx-webv1
+      name: webv1
+    - labels:
+        server: nginx-webv2
+      name: webv2
+    - labels:
+        server: nginx-web
+      name: web
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-web-gateway-destinationrule
+  namespace: traffic-control
+spec:
+  hosts:
+    - "nginx.web.com"
+  gateways:
+    - nginx-web-gateway-destinationrule
+  http:
+    - match:
+        - headers:
+            version:
+              exact: v1
+      route:
+        - destination:
+            host: nginx-web-all
+            subset: webv1
+    - match:
+        - headers:
+            version:
+              exact: v2
+      route:
+        - destination:
+            host: nginx-web-all
+            subset: webv2
+    - route:
+        - destination:
+            host: nginx-web-all
+            subset: web
