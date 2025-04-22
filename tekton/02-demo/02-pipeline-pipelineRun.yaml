@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: goodbye
+spec:
+  params:
+    - name: username
+      type: string
+  steps:
+    - name: goodbye
+      image: my.harbor.cn/k8sstudy/ubuntu:latest
+      script: |
+        #!/bin/bash
+        echo "Goodbye $(params.username)!"
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: hello-goodbye
+spec:
+  params:
+    - name: username
+      type: string
+  tasks:
+    - name: hello
+      taskRef:
+        name: hello
+    - name: goodbye
+      runAfter:
+        - hello
+      taskRef:
+        name: goodbye
+      params:
+        - name: username
+          value: $(params.username)
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: hello-goodbye-run
+spec:
+  pipelineRef:
+    name: hello-goodbye
+  params:
+    - name: username
+      value: "Tekton"
